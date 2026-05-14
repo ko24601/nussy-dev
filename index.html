@@ -575,6 +575,78 @@ section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
   pointer-events: none;
 }
 
+/* ── CONTACT ── */
+.contact-section {
+  padding: 100px 40px;
+  max-width: 1200px; margin: 0 auto;
+}
+.contact-layout {
+  display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px;
+  align-items: start; margin-top: 60px;
+}
+.contact-info-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 20px 0; border-bottom: 1px solid var(--border);
+}
+.contact-info-item:first-child { border-top: 1px solid var(--border); }
+.contact-info-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.contact-info-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 4px;
+}
+.contact-info-value {
+  font-size: 14px; color: var(--off-white);
+}
+/* Form */
+.contact-form {
+  display: flex; flex-direction: column; gap: 16px;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cf-group { display: flex; flex-direction: column; gap: 8px; }
+.cf-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted);
+}
+.cf-input, .cf-select, .cf-textarea {
+  background: var(--card); border: 1px solid var(--border);
+  color: var(--off-white); font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; padding: 12px 16px; outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  width: 100%; -webkit-appearance: none;
+}
+.cf-input:focus, .cf-select:focus, .cf-textarea:focus {
+  border-color: rgba(255,255,255,.4);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.08);
+}
+.cf-input::placeholder, .cf-textarea::placeholder { color: var(--muted); }
+.cf-select { cursor: none; }
+.cf-select option { background: #111; }
+.cf-textarea { resize: vertical; min-height: 140px; }
+.cf-submit {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  padding: 16px 32px; background: var(--white); color: var(--black);
+  border: none; cursor: none;
+  clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition: background .2s, transform .2s;
+  display: flex; align-items: center; gap: 10px; justify-content: center;
+}
+.cf-submit:hover { background: var(--off-white); transform: translateY(-2px); }
+.cf-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.cf-success {
+  display: none; padding: 16px; border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.04);
+  font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--off-white); text-align: center;
+}
+
 /* ── CTA ── */
 .cta-section {
   background: var(--white);
@@ -605,6 +677,14 @@ section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
   transition: background .2s, transform .2s; cursor: none;
 }
 .btn-black:hover { background: #111; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+
+@media (max-width: 900px) {
+  .contact-layout { grid-template-columns: 1fr; gap: 48px; }
+}
+@media (max-width: 640px) {
+  .contact-section { padding: 72px 20px; }
+  .form-row { grid-template-columns: 1fr; }
+}
 
 /* ── FOOTER ── */
 footer {
@@ -895,11 +975,68 @@ footer {
 </section>
 
 <!-- CTA -->
-<div class="cta-section" id="contact">
-  <h2 class="cta-title reveal">Got a project?<br>Let's talk.</h2>
+<div class="cta-section">
+  <h2 class="cta-title reveal">Got a project?<br>Let's build.</h2>
   <p class="cta-sub reveal">We're open to new projects, collaborations and ideas.</p>
   <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn-black reveal">⚡ Reach us on Discord</a>
 </div>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-layout">
+    <div class="contact-info">
+      <p class="section-tag reveal">GET IN TOUCH</p>
+      <h2 class="section-title reveal" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:16px;">Let's talk.</h2>
+      <p class="reveal" style="color:var(--dim);line-height:1.7;margin-bottom:40px;">Have a project in mind? Drop us a message and we'll get back to you within 24 hours.</p>
+      <div class="contact-info-item reveal">
+        <div class="contact-info-icon">@</div>
+        <span>kvickers3112@gmail.com</span>
+      </div>
+      <div class="contact-info-item reveal">
+        <div class="contact-info-icon">⚡</div>
+        <span>discord.gg/3FcMCvKBUq</span>
+      </div>
+      <div class="contact-info-item reveal">
+        <div class="contact-info-icon">◉</div>
+        <span>Based in Europe — available worldwide</span>
+      </div>
+    </div>
+    <form class="contact-form" id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+      <div class="form-row">
+        <div class="cf-group">
+          <label class="cf-label" for="cf-name">Name</label>
+          <input class="cf-input" id="cf-name" name="name" type="text" placeholder="Your name" required>
+        </div>
+        <div class="cf-group">
+          <label class="cf-label" for="cf-email">Email</label>
+          <input class="cf-input" id="cf-email" name="email" type="email" placeholder="your@email.com" required>
+        </div>
+      </div>
+      <div class="cf-group">
+        <label class="cf-label" for="cf-type">Project type</label>
+        <select class="cf-input cf-select" id="cf-type" name="project_type">
+          <option value="" disabled selected>Select a category</option>
+          <option value="Website">Website</option>
+          <option value="Web App">Web App</option>
+          <option value="Branding">Branding / Design</option>
+          <option value="Motorsport">Motorsport Tools</option>
+          <option value="Collab">Collaboration</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="cf-group">
+        <label class="cf-label" for="cf-msg">Message</label>
+        <textarea class="cf-input cf-textarea" id="cf-msg" name="message" placeholder="Tell us about your project..." required></textarea>
+      </div>
+      <button type="submit" class="cf-submit" id="cf-btn">
+        <span id="cf-btn-text">Send Message</span>
+      </button>
+      <div class="cf-success" id="cf-success">
+        ✓ Message sent — we'll be in touch soon.
+      </div>
+    </form>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
@@ -1031,6 +1168,39 @@ window.addEventListener('scroll', () => {
     });
   }, { threshold: 0.5 });
   document.querySelectorAll('[data-count]').forEach(el => obs.observe(el));
+})();
+
+// ── CONTACT FORM ──
+(function() {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+  const btn = document.getElementById('cf-btn');
+  const btnText = document.getElementById('cf-btn-text');
+  const success = document.getElementById('cf-success');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    btn.disabled = true;
+    btnText.textContent = 'Sending...';
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        form.reset();
+        success.style.display = 'block';
+        btnText.textContent = 'Sent!';
+        setTimeout(() => { success.style.display = 'none'; btnText.textContent = 'Send Message'; btn.disabled = false; }, 5000);
+      } else {
+        btnText.textContent = 'Error — try again';
+        btn.disabled = false;
+      }
+    } catch(err) {
+      btnText.textContent = 'Error — try again';
+      btn.disabled = false;
+    }
+  });
 })();
 </script>
 </body>
