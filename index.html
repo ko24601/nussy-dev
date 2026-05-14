@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nussy Dev — We Build the Digital Grid</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23000'/><text y='24' x='4' font-size='22' fill='white' font-family='monospace' font-weight='bold'>N</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --white: #ffffff;
+  --off-white: #e8e8e8;
+  --dim: #888888;
+  --muted: #444444;
+  --border: #1c1c1c;
+  --card: #0d0d0d;
+  --black: #000000;
+  --bg: #050505;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--off-white);
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  position: fixed; top: 0; left: 0;
+  width: 12px; height: 12px;
+  background: var(--white);
+  border-radius: 50%;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%,-50%);
+  transition: width .15s, height .15s, background .15s, opacity .15s;
+  will-change: transform;
+  mix-blend-mode: difference;
+}
+#cursor-ring {
+  position: fixed; top: 0; left: 0;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 50%;
+  pointer-events: none; z-index: 99998;
+  transform: translate(-50%,-50%);
+  transition: width .3s, height .3s, border-color .2s;
+  will-change: transform;
+  mix-blend-mode: difference;
+}
+#cursor.hover  { width: 20px; height: 20px; }
+#cursor-ring.hover { width: 60px; height: 60px; border-color: rgba(255,255,255,0.8); }
+@media (pointer: coarse) { #cursor, #cursor-ring { display: none; } body { cursor: auto; } }
+
+/* ── LOADER ── */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--black);
+  z-index: 99997;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 24px;
+  transition: opacity .6s ease, transform .6s ease;
+}
+#loader.out { opacity: 0; transform: scale(1.03); pointer-events: none; }
+.loader-wordmark {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+}
+.loader-wordmark span { color: var(--dim); }
+.loader-track {
+  width: 200px; height: 1px;
+  background: #1a1a1a;
+  overflow: hidden;
+}
+.loader-fill {
+  height: 100%; width: 0%;
+  background: var(--white);
+  transition: width .08s linear;
+  box-shadow: 0 0 12px rgba(255,255,255,0.4);
+}
+.loader-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 4px;
+  color: var(--muted); text-transform: uppercase;
+}
+
+/* ── SCROLL PROGRESS ── */
+#sp {
+  position: fixed; top: 0; left: 0; height: 1px;
+  background: var(--white); z-index: 9999;
+  width: 0%; pointer-events: none;
+  box-shadow: 0 0 8px rgba(255,255,255,0.3);
+  transition: width .1s linear;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 0 40px;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid transparent;
+  transition: background .3s, border-color .3s;
+}
+nav.scrolled {
+  background: rgba(5,5,5,0.92);
+  backdrop-filter: blur(16px);
+  border-color: var(--border);
+}
+.nav-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 4px; text-transform: uppercase;
+  color: var(--white); text-decoration: none;
+}
+.nav-logo span { color: var(--dim); }
+.nav-links {
+  display: flex; gap: 0; list-style: none;
+}
+.nav-links a {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  padding: 0 18px; height: 56px;
+  display: flex; align-items: center;
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+.nav-links a:hover { color: var(--white); border-bottom-color: var(--white); }
+.nav-status {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 3px;
+  color: var(--muted); text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-status::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--white);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .4; transform: scale(.7); }
+}
+
+/* Mobile nav */
+.nav-burger {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: none;
+  padding: 6px; z-index: 1001;
+}
+.nav-burger span {
+  display: block; width: 20px; height: 1px;
+  background: var(--white); transition: transform .3s, opacity .3s;
+}
+.nav-burger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+.nav-mobile-menu {
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; right: 0;
+  background: rgba(5,5,5,0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 999;
+  clip-path: inset(0 0 100% 0);
+  opacity: 0; pointer-events: none;
+  transition: clip-path .35s cubic-bezier(.22,1,.36,1), opacity .25s;
+  padding: 8px 0 20px;
+}
+.nav-mobile-menu.open { clip-path: inset(0 0 0% 0); opacity: 1; pointer-events: all; }
+.nav-mobile-menu a {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  padding: 14px 28px;
+  border-left: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+.nav-mobile-menu a:hover { color: var(--white); border-left-color: var(--white); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 40px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 20s linear infinite;
+}
+@keyframes gridDrift {
+  from { background-position: 0 0; }
+  to   { background-position: 60px 60px; }
+}
+.hero-noise {
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; opacity: .5;
+}
+.hero-content { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; width: 100%; }
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 6px; text-transform: uppercase;
+  color: var(--dim); margin-bottom: 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.hero-eyebrow::before {
+  content: ''; width: 40px; height: 1px; background: var(--muted);
+}
+.hero-title {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(36px, 7vw, 88px);
+  font-weight: 700; line-height: 1.05;
+  color: var(--white); margin-bottom: 32px;
+  position: relative;
+}
+.hero-title .glitch-wrap {
+  display: inline-block; position: relative;
+}
+.hero-title .glitch-wrap::before,
+.hero-title .glitch-wrap::after {
+  content: attr(data-text);
+  position: absolute; inset: 0;
+  font-family: inherit; font-size: inherit; font-weight: inherit;
+  color: var(--white);
+}
+.hero-title .glitch-wrap::before { animation: glA 7s infinite; }
+.hero-title .glitch-wrap::after  { animation: glB 7s infinite; }
+@keyframes glA {
+  0%,90%,100% { clip-path: none; transform: none; }
+  91% { clip-path: polygon(0 20%,100% 20%,100% 35%,0 35%); transform: translateX(-3px); color: #aaa; }
+  93% { clip-path: polygon(0 60%,100% 60%,100% 75%,0 75%); transform: translateX(3px); color: #ccc; }
+  95% { clip-path: none; transform: none; }
+}
+@keyframes glB {
+  0%,90%,100% { clip-path: none; transform: none; opacity: 0; }
+  91% { clip-path: polygon(0 55%,100% 55%,100% 70%,0 70%); transform: translateX(5px); opacity: .6; color: #555; }
+  93% { clip-path: polygon(0 15%,100% 15%,100% 30%,0 30%); transform: translateX(-5px); opacity: .5; color: #777; }
+  95% { opacity: 0; }
+}
+.hero-sub {
+  font-size: clamp(15px, 2vw, 20px);
+  color: var(--dim); max-width: 640px;
+  line-height: 1.7; margin-bottom: 48px;
+}
+.hero-sub .type-cursor {
+  display: inline-block; width: 2px; height: 1.1em;
+  background: var(--white); vertical-align: middle;
+  margin-left: 2px; animation: blink 1s step-end infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.hero-cta { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-scroll {
+  position: absolute; bottom: 40px; right: 40px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); writing-mode: vertical-rl;
+  display: flex; align-items: center; gap: 12px;
+  animation: scrollBob 2s ease-in-out infinite;
+}
+.hero-scroll::after {
+  content: ''; width: 1px; height: 48px;
+  background: linear-gradient(var(--muted), transparent);
+}
+@keyframes scrollBob {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; padding: 14px 28px;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+  transition: all .2s; cursor: none; border: none; position: relative; overflow: hidden;
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,.1); opacity: 0; transition: opacity .2s;
+}
+.btn:active::after { opacity: 1; }
+.btn-white {
+  background: var(--white); color: var(--black);
+  clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+}
+.btn-white:hover { background: var(--off-white); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,255,255,.15); }
+.btn-outline {
+  background: transparent; color: var(--white);
+  border: 1px solid rgba(255,255,255,.25);
+  clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+}
+.btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,.05); transform: translateY(-2px); }
+
+/* ── SECTIONS ── */
+section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
+.section-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.section-tag::before { content: ''; width: 24px; height: 1px; background: var(--muted); }
+.section-title {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(26px, 4vw, 48px); font-weight: 700;
+  color: var(--white); line-height: 1.15; margin-bottom: 20px;
+}
+.section-title em { color: var(--dim); font-style: normal; }
+.section-body { font-size: 16px; color: var(--dim); line-height: 1.8; max-width: 600px; }
+.section-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+}
+
+/* ── MARQUEE ── */
+.marquee-wrap {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0; overflow: hidden;
+  background: var(--card);
+}
+.marquee-track {
+  display: inline-block; white-space: nowrap;
+  animation: marquee 25s linear infinite;
+}
+.marquee-track span {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 0 40px;
+}
+.marquee-track span::before { content: '/ '; color: var(--border); }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+
+/* ── ABOUT ── */
+.about-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: center;
+}
+.about-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  margin-top: 40px;
+}
+.about-stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 28px;
+}
+.about-stat .s-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 36px; font-weight: 700; color: var(--white);
+  line-height: 1;
+}
+.about-stat .s-label {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-top: 6px;
+}
+.about-visual {
+  position: relative; aspect-ratio: 1;
+  background: var(--card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.about-visual-inner {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(60px, 8vw, 100px); font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,.08);
+  letter-spacing: -4px; user-select: none;
+  animation: visualSpin 20s linear infinite;
+}
+@keyframes visualSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.about-visual::before {
+  content: '';
+  position: absolute; inset: 20px;
+  border: 1px solid rgba(255,255,255,.05);
+  animation: visualSpin 15s linear infinite reverse;
+}
+.about-visual-center {
+  position: absolute;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px; font-weight: 700; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--white); text-align: center;
+  line-height: 1.6;
+}
+
+/* ── SERVICES ── */
+.services-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  margin-top: 60px;
+}
+.service-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 40px 32px; position: relative; overflow: hidden;
+  transition: border-color .3s, transform .3s;
+}
+.service-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--white);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .4s ease;
+}
+.service-card:hover { border-color: rgba(255,255,255,.2); transform: translateY(-4px); }
+.service-card:hover::before { transform: scaleX(1); }
+.service-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; color: var(--muted);
+  margin-bottom: 20px;
+}
+.service-icon {
+  font-size: 32px; margin-bottom: 20px; display: block;
+  filter: grayscale(1);
+  transition: filter .3s, transform .3s;
+}
+.service-card:hover .service-icon { filter: grayscale(0); transform: scale(1.1); }
+.service-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px; font-weight: 700; color: var(--white);
+  margin-bottom: 14px; letter-spacing: 1px;
+}
+.service-desc { font-size: 14px; color: var(--dim); line-height: 1.7; }
+.service-tags {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px;
+}
+.service-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border: 1px solid var(--border); color: var(--muted);
+  transition: border-color .2s, color .2s;
+}
+.service-card:hover .service-tag { border-color: rgba(255,255,255,.2); color: var(--off-white); }
+.service-card .service-bg-num {
+  position: absolute; right: 16px; bottom: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 80px; font-weight: 700;
+  color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.04);
+  pointer-events: none;
+}
+
+/* ── PROJECTS ── */
+.projects-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
+  margin-top: 60px;
+}
+.project-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 36px; position: relative; overflow: hidden;
+  transition: border-color .3s, transform .2s;
+  text-decoration: none; display: block;
+}
+.project-card:hover { border-color: rgba(255,255,255,.2); transform: translateY(-3px); }
+.project-card::after {
+  content: '↗';
+  position: absolute; top: 28px; right: 28px;
+  font-size: 18px; color: var(--muted);
+  transition: transform .2s, color .2s;
+}
+.project-card:hover::after { transform: translate(3px,-3px); color: var(--white); }
+.project-type {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.project-name {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(16px, 2vw, 22px); font-weight: 700;
+  color: var(--white); margin-bottom: 12px; line-height: 1.3;
+}
+.project-desc { font-size: 14px; color: var(--dim); line-height: 1.7; margin-bottom: 20px; }
+.project-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+.project-stack span {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  padding: 3px 9px; border: 1px solid var(--border); color: var(--muted);
+}
+.project-card.featured { grid-column: 1 / -1; }
+.project-card.featured .project-name { font-size: clamp(20px, 3vw, 32px); }
+
+/* ── PROCESS ── */
+.process-steps {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+  margin-top: 60px; counter-reset: step;
+}
+.process-step {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 32px 24px; position: relative;
+  counter-increment: step;
+}
+.process-step::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; color: var(--muted);
+  display: block; margin-bottom: 16px;
+}
+.process-step-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px; font-weight: 700; color: var(--white);
+  margin-bottom: 10px; letter-spacing: 1px;
+}
+.process-step-desc { font-size: 13px; color: var(--dim); line-height: 1.7; }
+.process-step::after {
+  content: '';
+  position: absolute; top: 32px; right: -1px;
+  width: 1px; height: 24px;
+  background: rgba(255,255,255,.15);
+}
+.process-step:last-child::after { display: none; }
+
+/* ── TEAM ── */
+.team-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2px; margin-top: 60px;
+}
+.team-card {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 36px 28px; position: relative; overflow: hidden;
+  transition: border-color .3s, transform .2s;
+}
+.team-card:hover { border-color: rgba(255,255,255,.2); transform: translateY(-3px); }
+.team-avatar {
+  width: 72px; height: 72px;
+  border: 1px solid var(--border);
+  background: #111;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 24px; font-weight: 700; color: var(--white);
+  margin-bottom: 20px; overflow: hidden;
+  transition: border-color .3s;
+}
+.team-card:hover .team-avatar { border-color: rgba(255,255,255,.3); }
+.team-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.team-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 15px; font-weight: 700; color: var(--white);
+  margin-bottom: 6px; letter-spacing: 1px;
+}
+.team-role {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 16px;
+}
+.team-bio { font-size: 13px; color: var(--dim); line-height: 1.7; }
+.team-card-num {
+  position: absolute; right: 16px; bottom: 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 60px; font-weight: 700;
+  color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.04);
+  pointer-events: none;
+}
+
+/* ── CTA ── */
+.cta-section {
+  background: var(--white);
+  padding: 80px 40px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: 'LET\'S BUILD';
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(40px, 10vw, 120px); font-weight: 700;
+  color: rgba(0,0,0,.05); white-space: nowrap; pointer-events: none;
+  letter-spacing: 10px;
+}
+.cta-title {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(24px, 4vw, 48px); font-weight: 700;
+  color: var(--black); margin-bottom: 16px; position: relative;
+}
+.cta-sub { font-size: 16px; color: rgba(0,0,0,.5); margin-bottom: 36px; position: relative; }
+.btn-black {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  padding: 14px 32px; background: var(--black); color: var(--white);
+  text-decoration: none; display: inline-flex; align-items: center; gap: 10px;
+  clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition: background .2s, transform .2s; cursor: none;
+}
+.btn-black:hover { background: #111; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 40px;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; gap: 24px;
+  max-width: 1200px; margin: 0 auto;
+}
+.footer-brand {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+}
+.footer-brand span { color: var(--muted); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-align: center; }
+.footer-link { text-align: right; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.footer-link a { color: var(--dim); text-decoration: none; transition: color .2s; }
+.footer-link a:hover { color: var(--white); }
+
+/* ── REVEAL ANIMATIONS ── */
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity .8s ease, transform .8s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity .8s ease, transform .8s ease; }
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right { opacity: 0; transform: translateX(32px); transition: opacity .8s ease, transform .8s ease; }
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+.stagger > * {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.stagger.visible > * { opacity: 1; transform: translateY(0); }
+.stagger.visible > *:nth-child(1) { transition-delay: .0s; }
+.stagger.visible > *:nth-child(2) { transition-delay: .1s; }
+.stagger.visible > *:nth-child(3) { transition-delay: .2s; }
+.stagger.visible > *:nth-child(4) { transition-delay: .3s; }
+.stagger.visible > *:nth-child(5) { transition-delay: .4s; }
+.stagger.visible > *:nth-child(6) { transition-delay: .5s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .about-layout { grid-template-columns: 1fr; gap: 48px; }
+  .about-visual { display: none; }
+  .services-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .project-card.featured { grid-column: auto; }
+  .process-steps { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .nav-status { display: none; }
+  .nav-burger { display: flex; }
+  section { padding: 72px 20px; }
+  .hero { padding: 0 20px 72px; }
+  .hero-scroll { display: none; }
+  .process-steps { grid-template-columns: 1fr; }
+  .about-stats { grid-template-columns: 1fr 1fr; }
+  footer { grid-template-columns: 1fr; gap: 12px; text-align: center; }
+  .footer-link { text-align: center; }
+  .cta-section { padding: 60px 20px; }
+}
+@media (max-width: 420px) {
+  .about-stats { grid-template-columns: 1fr; }
+  .hero-cta { flex-direction: column; }
+  .hero-cta .btn { justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- SCROLL PROGRESS -->
+<div id="sp"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-wordmark">NUSSY<span>.DEV</span></div>
+  <div class="loader-track"><div class="loader-fill" id="lf"></div></div>
+  <div class="loader-label" id="ll">Initialising</div>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#" class="nav-logo">NUSSY<span>.DEV</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-status">Available for projects</div>
+  <button class="nav-burger" id="nav-burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-mobile-menu" id="nav-mobile">
+  <a href="#about"    onclick="closeMobileNav()">About</a>
+  <a href="#services" onclick="closeMobileNav()">Services</a>
+  <a href="#projects" onclick="closeMobileNav()">Projects</a>
+  <a href="#team"     onclick="closeMobileNav()">Team</a>
+  <a href="#contact"  onclick="closeMobileNav()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Nussy Co — Development Division</div>
+    <h1 class="hero-title">
+      <span class="glitch-wrap" data-text="We Build">We Build</span><br>
+      <span class="glitch-wrap" data-text="the Digital" style="color:var(--dim)">the Digital</span><br>
+      <span class="glitch-wrap" data-text="Grid.">Grid.</span>
+    </h1>
+    <p class="hero-sub">
+      <span id="typewriter"></span><span class="type-cursor"></span>
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-white">View Our Work →</a>
+      <a href="#contact" class="btn btn-outline">Start a Project</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Web Development</span><span>UI / UX Design</span><span>Firebase</span>
+    <span>React</span><span>Performance</span><span>Animations</span>
+    <span>Mobile First</span><span>Clean Code</span><span>Nussy Dev</span>
+    <span>Web Development</span><span>UI / UX Design</span><span>Firebase</span>
+    <span>React</span><span>Performance</span><span>Animations</span>
+    <span>Mobile First</span><span>Clean Code</span><span>Nussy Dev</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-layout">
+    <div>
+      <div class="section-tag reveal">Who We Are</div>
+      <h2 class="section-title reveal">Building products<br><em>that actually work.</em></h2>
+      <p class="section-body reveal">Nussy Dev is the development arm of Nussy Co — a small, focused team that builds fast, modern web experiences. From motorsport platforms to custom tools, we turn ideas into reality.</p>
+      <div class="about-stats stagger">
+        <div class="about-stat">
+          <div class="s-num" data-count="5">0</div>
+          <div class="s-label">Projects Live</div>
+        </div>
+        <div class="about-stat">
+          <div class="s-num" data-count="100">0</div>
+          <div class="s-label">% Custom Built</div>
+        </div>
+        <div class="about-stat">
+          <div class="s-num" data-count="1">0</div>
+          <div class="s-label">Core Developer</div>
+        </div>
+        <div class="about-stat">
+          <div class="s-num" data-count="24">0</div>
+          <div class="s-label">Hr Turnaround</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual reveal-right">
+      <div class="about-visual-inner">ND</div>
+      <div class="about-visual-center">NUSSY<br>DEV</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-tag reveal">What We Do</div>
+  <h2 class="section-title reveal">Services &<br><em>Capabilities</em></h2>
+  <div class="services-grid stagger">
+    <div class="service-card">
+      <div class="service-num">01</div>
+      <span class="service-icon">🌐</span>
+      <div class="service-title">Web Design & Dev</div>
+      <div class="service-desc">Full-stack websites built fast, clean and mobile-first. From landing pages to complex web apps — we handle it all.</div>
+      <div class="service-tags">
+        <span class="service-tag">HTML/CSS</span>
+        <span class="service-tag">JavaScript</span>
+        <span class="service-tag">Firebase</span>
+        <span class="service-tag">GitHub Pages</span>
+      </div>
+      <div class="service-bg-num">01</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">02</div>
+      <span class="service-icon">⚡</span>
+      <div class="service-title">UI / UX & Animation</div>
+      <div class="service-desc">Interfaces that don't just work — they feel incredible. Smooth animations, thoughtful interactions, pixel-perfect design.</div>
+      <div class="service-tags">
+        <span class="service-tag">Motion Design</span>
+        <span class="service-tag">CSS Animations</span>
+        <span class="service-tag">Micro-interactions</span>
+      </div>
+      <div class="service-bg-num">02</div>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03</div>
+      <span class="service-icon">🔧</span>
+      <div class="service-title">Tools & Integrations</div>
+      <div class="service-desc">Custom dashboards, admin panels, real-time data with Firebase, Discord bots, and workflow automation.</div>
+      <div class="service-tags">
+        <span class="service-tag">Firebase</span>
+        <span class="service-tag">Firestore</span>
+        <span class="service-tag">REST APIs</span>
+        <span class="service-tag">Discord</span>
+      </div>
+      <div class="service-bg-num">03</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-tag reveal">Our Work</div>
+  <h2 class="section-title reveal">Selected<br><em>Projects</em></h2>
+  <div class="projects-grid stagger">
+    <a class="project-card featured" href="https://nussymotorsport.de" target="_blank">
+      <div class="project-type">Flagship — Live</div>
+      <div class="project-name">Nussy Motorsport</div>
+      <div class="project-desc">The official Nussy Motorsport team website. Real-time news, driver roster with profiles, event coverage, merchandise store and a full admin panel — all built and maintained by Nussy Dev.</div>
+      <div class="project-stack">
+        <span>Firebase</span><span>Firestore</span><span>GitHub Pages</span>
+        <span>Custom CMS</span><span>Stripe</span><span>Real-time</span>
+      </div>
+    </a>
+    <a class="project-card" href="https://www.nussymotorsport.store" target="_blank">
+      <div class="project-type">E-Commerce — Live</div>
+      <div class="project-name">Nussy Paddock Shop</div>
+      <div class="project-desc">Official merchandise store. Product grid with filtering, Stripe payment links, and responsive design.</div>
+      <div class="project-stack">
+        <span>Stripe</span><span>GitHub Pages</span><span>Responsive</span>
+      </div>
+    </a>
+    <div class="project-card">
+      <div class="project-type">In Development</div>
+      <div class="project-name">Nussy Admin Suite</div>
+      <div class="project-desc">Full-featured admin dashboard for managing team news, roster, profiles and site content in real time.</div>
+      <div class="project-stack">
+        <span>Firebase Auth</span><span>Firestore</span><span>Real-time</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PROCESS -->
+<section>
+  <div class="section-tag reveal">How We Work</div>
+  <h2 class="section-title reveal">The Process</h2>
+  <div class="process-steps stagger">
+    <div class="process-step">
+      <div class="process-step-title">Brief</div>
+      <div class="process-step-desc">We start with a conversation. What do you need, who's it for, and what does success look like?</div>
+    </div>
+    <div class="process-step">
+      <div class="process-step-title">Design</div>
+      <div class="process-step-desc">Fast, functional prototypes. We move quickly so you can see the vision before a line of final code is written.</div>
+    </div>
+    <div class="process-step">
+      <div class="process-step-title">Build</div>
+      <div class="process-step-desc">Clean, efficient code. No bloated frameworks where they're not needed. Built to last and easy to maintain.</div>
+    </div>
+    <div class="process-step">
+      <div class="process-step-title">Ship</div>
+      <div class="process-step-desc">Live, fast and polished. We don't ghost after launch — ongoing support and iterations are always on the table.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="section-tag reveal">The Team</div>
+  <h2 class="section-title reveal">Who's<br><em>Behind It</em></h2>
+  <div class="team-grid stagger">
+    <div class="team-card">
+      <div class="team-avatar">K</div>
+      <div class="team-name">K1144</div>
+      <div class="team-role">Founder — Lead Developer</div>
+      <div class="team-bio">The one behind Nussy Dev. Builds everything from the ground up — design, code, and deployment. Part of the Nussy Co family.</div>
+      <div class="team-card-num">01</div>
+    </div>
+    <div class="team-card" style="border-style:dashed;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--muted);">More coming soon</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section" id="contact">
+  <h2 class="cta-title reveal">Got a project?<br>Let's talk.</h2>
+  <p class="cta-sub reveal">We're open to new projects, collaborations and ideas.</p>
+  <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn-black reveal">⚡ Reach us on Discord</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">NUSSY<span>.DEV</span></div>
+  <div class="footer-copy">© 2025 Nussy Dev — Part of Nussy Co</div>
+  <div class="footer-link">
+    <a href="https://nussymotorsport.de" target="_blank">Motorsport →</a>
+  </div>
+</footer>
+
+<script>
+// ── LOADER ──
+(function() {
+  const fill = document.getElementById('lf');
+  const label = document.getElementById('ll');
+  const loader = document.getElementById('loader');
+  const steps = [[20,'Loading assets'],[45,'Building interface'],[70,'Running systems'],[90,'Almost ready'],[100,'Let\'s go']];
+  let i = 0;
+  function next() {
+    if (i >= steps.length) {
+      setTimeout(() => { loader.classList.add('out'); setTimeout(() => loader.style.display='none', 700); }, 200);
+      return;
+    }
+    const [pct, txt] = steps[i++];
+    fill.style.width = pct + '%';
+    label.textContent = txt;
+    setTimeout(next, 320 + Math.random() * 180);
+  }
+  setTimeout(next, 200);
+  setTimeout(() => { loader.classList.add('out'); setTimeout(() => loader.style.display='none', 700); }, 4000);
+})();
+
+// ── CURSOR ──
+(function() {
+  if (window.matchMedia('(pointer:coarse)').matches || window.innerWidth < 768) return;
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let cx=0,cy=0,rx=0,ry=0,tx=0,ty=0;
+  document.addEventListener('mousemove', e => { tx=e.clientX; ty=e.clientY; });
+  function loop() {
+    cx += (tx-cx)*.25; cy += (ty-cy)*.25;
+    rx += (tx-rx)*.1;  ry += (ty-ry)*.1;
+    cur.style.left  = cx+'px'; cur.style.top  = cy+'px';
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(loop);
+  }
+  loop();
+  document.querySelectorAll('a,button,.service-card,.project-card,.team-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.classList.add('hover'); ring.classList.add('hover'); });
+    el.addEventListener('mouseleave', () => { cur.classList.remove('hover'); ring.classList.remove('hover'); });
+  });
+})();
+
+// ── SCROLL PROGRESS + NAV ──
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  document.getElementById('sp').style.width = pct + '%';
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// ── HAMBURGER ──
+(function() {
+  const btn = document.getElementById('nav-burger');
+  const menu = document.getElementById('nav-mobile');
+  const nav = document.getElementById('main-nav');
+  window.closeMobileNav = () => { btn.classList.remove('open'); menu.classList.remove('open'); };
+  btn.addEventListener('click', () => {
+    const open = menu.classList.contains('open');
+    if (!open) {
+      menu.style.top = nav.getBoundingClientRect().bottom + 'px';
+      menu.classList.add('open'); btn.classList.add('open');
+    } else { closeMobileNav(); }
+  });
+  window.addEventListener('scroll', () => {
+    if (menu.classList.contains('open')) menu.style.top = nav.getBoundingClientRect().bottom + 'px';
+  }, { passive: true });
+  document.addEventListener('click', e => {
+    if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) closeMobileNav();
+  });
+})();
+
+// ── TYPEWRITER ──
+(function() {
+  const lines = [
+    'Clean code. Sick design. Zero fluff.',
+    'Web experiences that hit different.',
+    'From sim racing to real-world digital.',
+    'Built fast. Built right. Built to last.',
+  ];
+  const el = document.getElementById('typewriter');
+  let li = 0, ci = 0, deleting = false;
+  function tick() {
+    const line = lines[li];
+    if (!deleting) {
+      el.textContent = line.slice(0, ++ci);
+      if (ci === line.length) { deleting = true; setTimeout(tick, 2200); return; }
+    } else {
+      el.textContent = line.slice(0, --ci);
+      if (ci === 0) { deleting = false; li = (li+1) % lines.length; setTimeout(tick, 300); return; }
+    }
+    setTimeout(tick, deleting ? 28 : 52);
+  }
+  setTimeout(tick, 1800);
+})();
+
+// ── SCROLL REVEAL ──
+(function() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.stagger').forEach(el => obs.observe(el));
+})();
+
+// ── COUNT UP ──
+(function() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = +el.dataset.count;
+      let cur = 0;
+      const step = Math.ceil(target / 40);
+      const t = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = cur + (el.dataset.suffix || '');
+        if (cur >= target) clearInterval(t);
+      }, 40);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>
