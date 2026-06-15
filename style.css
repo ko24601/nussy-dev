@@ -453,40 +453,6 @@ body:has(a:hover) .cursor-follower, body:has(button:hover) .cursor-follower {
   transform: translateY(-4px);
 }
 .project-img { aspect-ratio: 16/9; overflow: hidden; }
-.project-placeholder {
-  width: 100%; height: 100%;
-  background: var(--gray-mid);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-.project-placeholder::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(rgba(245,245,245,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245,245,245,0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
-}
-.project-placeholder::after {
-  content: attr(data-num);
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 5rem;
-  font-weight: 700;
-  color: rgba(245,245,245,0.04);
-}
-.project-placeholder span {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.3em;
-  color: var(--gray-light);
-  position: relative;
-  z-index: 1;
-}
 .project-info { padding: 1.75rem; }
 .project-tag {
   font-family: var(--font-mono);
@@ -526,13 +492,15 @@ body:has(a:hover) .cursor-follower, body:has(button:hover) .cursor-follower {
 }
 .project-tech span {
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--gray-light);
   border: 1px solid var(--gray-mid);
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 2px;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 /* project placeholder themes */
@@ -545,24 +513,26 @@ body:has(a:hover) .cursor-follower, body:has(button:hover) .cursor-follower {
   gap: 1rem;
   position: relative;
   overflow: hidden;
-  background: var(--gray-mid);
+  background: #111;
 }
 .project-placeholder::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(rgba(245,245,245,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245,245,245,0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
+    linear-gradient(rgba(245,245,245,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,245,245,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  z-index: 0;
 }
 .pp-label {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  font-weight: 700;
 }
 .pp-features {
   display: flex;
@@ -570,47 +540,48 @@ body:has(a:hover) .cursor-follower, body:has(button:hover) .cursor-follower {
   gap: 0.4rem;
   justify-content: center;
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  padding: 0 1rem;
 }
 .pp-features span {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-family: var(--font-mono);
   padding: 0.2rem 0.5rem;
   border-radius: 2px;
   border: 1px solid currentColor;
-  opacity: 0.6;
+  opacity: 0.75;
 }
 
 /* individual card accent colours */
-.project-nussy-co   { background: #0f1f0f; }
+.project-nussy-co   { background: #0a160a; }
 .project-nussy-co   .pp-label { color: #22c55e; }
 .project-nussy-co   .pp-features span { color: #22c55e; }
-.project-nussy-co::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 60%, rgba(34,197,94,0.12) 0%, transparent 70%); }
+.project-nussy-co::after   { content:''; position:absolute; inset:0; z-index:1; background: radial-gradient(ellipse at 50% 70%, rgba(34,197,94,0.22) 0%, transparent 65%); }
 
-.project-motorsport { background: #080808; }
+.project-motorsport { background: #070a02; }
 .project-motorsport .pp-label { color: #aaff00; }
 .project-motorsport .pp-features span { color: #aaff00; }
-.project-motorsport::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 60%, rgba(170,255,0,0.1) 0%, transparent 70%); }
+.project-motorsport::after { content:''; position:absolute; inset:0; z-index:1; background: radial-gradient(ellipse at 50% 70%, rgba(170,255,0,0.2) 0%, transparent 65%); }
 
-.project-store      { background: #0f0a00; }
+.project-store      { background: #100800; }
 .project-store      .pp-label { color: #f59e0b; }
 .project-store      .pp-features span { color: #f59e0b; }
-.project-store::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 60%, rgba(245,158,11,0.1) 0%, transparent 70%); }
+.project-store::after      { content:''; position:absolute; inset:0; z-index:1; background: radial-gradient(ellipse at 50% 70%, rgba(245,158,11,0.2) 0%, transparent 65%); }
 
-.project-rapidly    { background: #00050f; }
+.project-rapidly    { background: #00060f; }
 .project-rapidly    .pp-label { color: #38bdf8; }
 .project-rapidly    .pp-features span { color: #38bdf8; }
-.project-rapidly::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 60%, rgba(56,189,248,0.1) 0%, transparent 70%); }
+.project-rapidly::after    { content:''; position:absolute; inset:0; z-index:1; background: radial-gradient(ellipse at 50% 70%, rgba(56,189,248,0.2) 0%, transparent 65%); }
 
-.project-prl        { background: #0a0010; }
+.project-prl        { background: #08001a; }
 .project-prl        .pp-label { color: #a78bfa; }
 .project-prl        .pp-features span { color: #a78bfa; }
-.project-prl::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 60%, rgba(167,139,250,0.1) 0%, transparent 70%); }
+.project-prl::after        { content:''; position:absolute; inset:0; z-index:1; background: radial-gradient(ellipse at 50% 70%, rgba(167,139,250,0.2) 0%, transparent 65%); }
 
-.project-aspl       { background: #050010; }
+.project-aspl       { background: #060010; }
 .project-aspl       .pp-label { color: #f43f5e; }
 .project-aspl       .pp-features span { color: #f43f5e; }
-.project-aspl::after { content:''; position:absolute; inset:0; background: radial-gradient(circle at 50% 60%, rgba(244,63,94,0.1) 0%, transparent 70%); }
+.project-aspl::after       { content:''; position:absolute; inset:0; z-index:1; background: radial-gradient(ellipse at 50% 70%, rgba(244,63,94,0.2) 0%, transparent 65%); }
 
 /* ── CTA BAND ── */
 #cta-band {
