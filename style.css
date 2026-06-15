@@ -482,6 +482,7 @@ body:has(a:hover) .cursor-follower, body:has(button:hover) .cursor-follower {
   transition: letter-spacing 0.3s;
 }
 .project-link:hover { letter-spacing: 0.1em; }
+.project-soon { color: var(--gray-light); cursor: default; }
 
 /* tech tags */
 .project-tech {
