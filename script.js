@@ -84,21 +84,43 @@ statNums.forEach(el => counterObserver.observe(el));
 /* ── Contact form ── */
 const form = document.getElementById('contactForm');
 const formNote = document.getElementById('formNote');
-form.addEventListener('submit', e => {
+form.addEventListener('submit', async e => {
   e.preventDefault();
   const btn = form.querySelector('button[type="submit"]');
   btn.textContent = 'Sending…';
   btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = 'Message Sent ✓';
-    formNote.textContent = "We'll be in touch soon!";
-    form.reset();
-    setTimeout(() => {
-      btn.textContent = 'Send Message →';
-      btn.disabled = false;
-      formNote.textContent = '';
-    }, 4000);
-  }, 1200);
+  formNote.textContent = '';
+
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/support@nussymotorsport.de', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name: form.name.value,
+        email: form.email.value,
+        message: form.project.value,
+        _subject: 'New project enquiry — Nussy Dev',
+        _captcha: 'false'
+      })
+    });
+    const data = await res.json();
+    if (data.success === 'true' || data.success === true) {
+      btn.textContent = 'Message Sent ✓';
+      formNote.textContent = "We'll be in touch soon!";
+      form.reset();
+      setTimeout(() => {
+        btn.textContent = 'Send Message →';
+        btn.disabled = false;
+        formNote.textContent = '';
+      }, 5000);
+    } else {
+      throw new Error('send failed');
+    }
+  } catch {
+    btn.textContent = 'Send Message →';
+    btn.disabled = false;
+    formNote.textContent = 'Something went wrong — please email us directly.';
+  }
 });
 
 /* ── Stagger service cards ── */
