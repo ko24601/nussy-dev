@@ -435,6 +435,100 @@ body:has(a:hover) .cursor-follower, body:has(button:hover) .cursor-follower {
   line-height: 1.7;
 }
 
+/* ── PRICING ── */
+#pricing {
+  padding: 8rem 0;
+  border-top: 1px solid var(--gray-mid);
+}
+.pricing-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--gray-mid);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pricing-left {
+  padding: 3.5rem;
+  border-right: 1px solid var(--gray-mid);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.price-tag {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  line-height: 1;
+}
+.price-currency {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  color: var(--gray-light);
+}
+.price-amount {
+  font-family: var(--font-mono);
+  font-size: 7rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+.price-period {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--gray-light);
+  align-self: flex-end;
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.price-desc {
+  font-size: 1rem;
+  color: var(--gray-light);
+  line-height: 1.7;
+  max-width: 340px;
+}
+.pricing-right {
+  padding: 3.5rem;
+  background: var(--gray-dark);
+  display: flex;
+  align-items: center;
+}
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  width: 100%;
+}
+.pricing-features li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.95rem;
+  color: var(--gray-light);
+}
+.pf-check {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--white);
+  background: var(--gray-mid);
+  width: 22px; height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .pricing-card { grid-template-columns: 1fr; }
+  .pricing-left { border-right: none; border-bottom: 1px solid var(--gray-mid); padding: 2.5rem; }
+  .pricing-right { padding: 2.5rem; }
+  .price-amount { font-size: 5rem; }
+}
+
 /* ── PROJECTS ── */
 #projects { padding: 8rem 0; }
 .projects-grid {
